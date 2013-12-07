@@ -4,7 +4,7 @@
   <title><![CDATA[Right Brain]]></title>
   <link href="http://songyingxinok.github.io/atom.xml" rel="self"/>
   <link href="http://songyingxinok.github.io/"/>
-  <updated>2013-12-07T15:46:44+08:00</updated>
+  <updated>2013-12-07T15:51:18+08:00</updated>
   <id>http://songyingxinok.github.io/</id>
   <author>
     <name><![CDATA[John]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[the_begin_of_force]]></title>
-    <link href="http://songyingxinok.github.io/blog/2013/12/07/the-begin-of-force/"/>
+    <link href="http://songyingxinok.github.io/blog/2013/12/07/%E5%8A%9B%E9%87%8F%E7%9A%84%E8%B5%B7%E6%BA%90/"/>
     <updated>2013-12-07T14:41:40+08:00</updated>
-    <id>http://songyingxinok.github.io/blog/2013/12/07/the-begin-of-force</id>
+    <id>http://songyingxinok.github.io/blog/2013/12/07/力量的起源</id>
     <content type="html"><![CDATA[<p>花了两天的时间，终于把<code>Github Pages</code>搭建好了，有意思的是，原来对<code>Ruby</code>跟<code>Git</code>的完全不了解通过这两天的学习，也渐渐有点起色了。特别是对于<code>Git</code>的命令方面掌握了很多。</p>
 
 <p>我喜欢游戏，喜欢8-bit,喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。</p>
