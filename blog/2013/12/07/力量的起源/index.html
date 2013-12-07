@@ -9,7 +9,8 @@
 	<meta name="author" content="John">
 
 	
-	<meta name="description" content="起源 花了两天的时间，终于把Github Pages搭建好了，有意思的是，原来对Ruby跟Git的完全不了解通过这两天的学习，也渐渐有点起色了。特别是对于Git的命令方面掌握了很多。 我喜欢游戏，喜欢8-bit，喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。 Comments &hellip;">
+	<meta name="description" content="起源 我喜欢游戏，喜欢8-bit，喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。
+Octopress + Github Pages 是一个搭建私人博客的比较hack的方式，就像Octopress介绍自己说的：A blogging framework for hackers! &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -95,9 +96,112 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 	<h1 class="title" itemprop="name">起源</h1>
-	<div class="entry-content" itemprop="articleBody"><p>花了两天的时间，终于把<code>Github Pages</code>搭建好了，有意思的是，原来对<code>Ruby</code>跟<code>Git</code>的完全不了解通过这两天的学习，也渐渐有点起色了。特别是对于<code>Git</code>的命令方面掌握了很多。</p>
+	<div class="entry-content" itemprop="articleBody"><p>我喜欢游戏，喜欢8-bit，喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。
+Octopress + Github Pages 是一个搭建私人博客的比较hack的方式，就像Octopress介绍自己说的：<code>A blogging framework for hackers</code>!</p>
 
-<p>我喜欢游戏，喜欢8-bit，喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。</p>
+<h4>搭建Ruby环境</h4>
+
+<p>使用RVM（Ruby Version Manager）来负责安装与管理Ruby的环境。在做这一切之前，先安装好Homebrew能解决很多<code>command not found</code>的问题</p>
+
+<p>安装Homebrew</p>
+
+<pre><code>ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go/install)"
+</code></pre>
+
+<p>安装RVM</p>
+
+<pre><code>curl -L https://get.rvm.io | bash -s stable --ruby
+</code></pre>
+
+<p>这里获取的是最新的ruby版本，目前我取下来的版本是2.0.0。如果需要使用1.9.3环境</p>
+
+<pre><code>rvm install 1.9.3
+rvm use 1.9.3
+rvm rubygems latest
+</code></pre>
+
+<p>搭建好RVM之后就可以正式开始搭建Octopress了。cd 到你想要保存octopress的目录下，然后在终端输入：</p>
+
+<pre><code>git clone git://github.com/imathis/octopress.git octopress
+</code></pre>
+
+<p>下一步是安装相关的依赖：</p>
+
+<pre><code>gem install bundler
+bundle install
+</code></pre>
+
+<p>最后安装默认主题：</p>
+
+<pre><code>rake install
+</code></pre>
+
+<p>这样子octopress就算基本搭建好了，下面的步骤就是怎么上传到github上了。</p>
+
+<p>小结: 在搭建环境的时候，发生了非常多的command not found的问题，直到我安装了homebrew + google所遇到的问题之后，一切迎刃而解了。</p>
+
+<h4>配置Octopress</h4>
+
+<p>首先在 Github 上创建一个由你自己的用户名组成的repo，如<code>yourusername.github.com</code>，注意这里必须是由你自己的user name 组成。然后第一次提交会有两个分支，一个是<code>source</code>分支，一个是<code>master</code>分支。<code>source</code>管理博客的源码，<code>master</code>分支用于管理生成的内容。Octopress的做法似乎是把<code>master</code>分支对<code>source</code>下的<strong><em>source</em></strong>文件夹做了映射，然后每次都会deploy的时候都会把这个文件夹提交到<code>master</code>。</p>
+
+<p>创建好了repo之后就可以自动生成github的页面，输入：</p>
+
+<pre><code>rake setup_github_pages
+</code></pre>
+
+<p>然后终端会让你输入你Github上的repo地址，这里注意不要根据它给的样式输入，而是找到自己的仓库地址，格式是：<code>git@github.com:yourusername/yourusername.github.com.git</code>，这里如果输入错误，之后就提交不到仓库了，我在这里遇到了这个问题导致后面一直提交不上去，浪费了时间。</p>
+
+<p>然后输入</p>
+
+<pre><code>rake generate
+rake deploy
+</code></pre>
+
+<p>最后把代码提交到仓库了</p>
+
+<pre><code>git add .
+git commit -m 'Initial octopress'
+git push origin source
+</code></pre>
+
+<p>到了这一步，就可以在浏览器输入<code>yourusername.github.com</code>访问你的Github Pages了。</p>
+
+<h4>发布文章</h4>
+
+<p>输入</p>
+
+<pre><code>rake new_post["title"]
+</code></pre>
+
+<p>就会在source/_post 文件夹生成一份年月日生成的markdown文件，我们就是通过这个来写文章的。写好文章之后，一般的步骤是</p>
+
+<pre><code>rake generate
+git add . 
+git commit -i 'change log'  
+git push origin source
+rake deploy
+</code></pre>
+
+<p>这样就把文章发布到你的私人博客上了，easy!</p>
+
+<h4>那些烦人的404</h4>
+
+<p>如果你在这里遇到了</p>
+
+<blockquote><p>The page build failed with the following error:
+The tag <code>include_array</code> in <code>source/index.html</code> is not a recognized Liquid tag.”
+and i just simply delete the code below and everything works fine in local preview.</p></blockquote>
+
+<p>这个问题，那很有可能你把整个source分支都提交到了master引起的错误。</p>
+
+<p>如果你遇到了关于submodule的错误，比如在安装greyshade主题的时候。那么只要删除这个文件夹就好了</p>
+
+<pre><code>git rm --cached .theme/greyshade
+</code></pre>
+
+<h4>小结</h4>
+
+<p>花了两天的时间，才把 Github Pages 搭建好了，有意思的是，原来对Ruby跟Git的完全不了解通过这两天的学习，也渐渐有点起色了。特别是对于Git的命令方面掌握了很多。感谢网上很多的Octopress教程，也是他们让我也想把自己搭建的过程分享出来，希望能节省一些人的时间。</p>
 </div>
 
 </article>
