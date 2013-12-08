@@ -3,7 +3,7 @@ layout: post
 title: "起源"
 date: 2013-12-07 14:41:40 +0800
 comments: true
-May the force be with you: 
+categories: 
 ---
 
 我喜欢游戏，喜欢8-bit，喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。
