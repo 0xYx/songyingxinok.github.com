@@ -6,51 +6,52 @@ comments: true
 categories: 
 ---
 
-我喜欢游戏，喜欢8-bit，喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。
+我喜欢游戏，喜欢8-bit，喜欢吉他，喜欢好的设计，希望这里将是我分享的一个好的起点。<br>
 Octopress + Github Pages 是一个搭建私人博客的比较hack的方式，就像Octopress介绍自己说的：```A blogging framework for hackers```!
 
-####搭建Ruby环境
-
+搭建Ruby环境
+----
 使用RVM（Ruby Version Manager）来负责安装与管理Ruby的环境。在做这一切之前，先安装好Homebrew能解决很多```command not found```的问题
 
-安装Homebrew
+* ####安装Homebrew
 	
-	ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go/install)"
+		ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go/install)"
 
-安装RVM
+* ####安装RVM
 
-	curl -L https://get.rvm.io | bash -s stable --ruby
+		curl -L https://get.rvm.io | bash -s stable --ruby
 	
-这里获取的是最新的ruby版本，目前我取下来的版本是2.0.0。如果需要使用1.9.3环境
+	这里获取的是最新的ruby版本，目前我取下来的版本是2.0.0。如果需要使用1.9.3环境
+	
+		rvm install 1.9.3
+		rvm use 1.9.3
+		rvm rubygems latest
 
-	rvm install 1.9.3
-	rvm use 1.9.3
-	rvm rubygems latest
+	搭建好RVM之后就可以正式开始搭建Octopress了。cd 到你想要保存octopress的目录下，然后在终	端输入：
 
-搭建好RVM之后就可以正式开始搭建Octopress了。cd 到你想要保存octopress的目录下，然后在终端输入：
-
-	git clone git://github.com/imathis/octopress.git octopress
+		git clone git://github.com/imathis/octopress.git octopress
 	
-下一步是安装相关的依赖：
+	下一步是安装相关的依赖：
 	
-	gem install bundler
-	bundle install
+		gem install bundler
+		bundle install
+		
+	最后安装默认主题：
 	
-最后安装默认主题：
+		rake install
 	
-	rake install
-	
-这样子octopress就算基本搭建好了，下面的步骤就是怎么上传到github上了。
+	这样子octopress就算基本搭建好了，下面的步骤就是怎么上传到github上了。
 
 小结: 在搭建环境的时候，发生了非常多的command not found的问题，直到我安装了homebrew + google所遇到的问题之后，一切迎刃而解了。
-####配置Octopress
-首先在 Github 上创建一个由你自己的用户名组成的repo，如```yourusername.github.com```，注意这里必须是由你自己的user name 组成。然后第一次提交会有两个分支，一个是```source```分支，一个是```master```分支。```source```管理博客的源码，```master```分支用于管理生成的内容。Octopress的做法似乎是把```master```分支对```source```下的***source***文件夹做了映射，然后每次都会deploy的时候都会把这个文件夹提交到```master```。
+配置Octopress
+-----
+首先在 Github 上创建一个由你自己的用户名组成的repo，如```yourusername.github.com```，注意这里必须是由你自己的user name 组成。然后第一次提	交会有两个分支，一个是```source```分支，一个是```master```分支。```source```管理博	客的源码，```master```分支用于管理生成的内容。Octopress的做法似乎是把```master```分	支对```source```下的***source***文件夹做了映射，然后每次都会deploy的时候都会把这个文	件夹提交到```master```。
 
 创建好了repo之后就可以自动生成github的页面，输入：
 
 	rake setup_github_pages
 	
-然后终端会让你输入你Github上的repo地址，这里注意不要根据它给的样式输入，而是找到自己的仓库地址，格式是：```git@github.com:yourusername/yourusername.github.com.git```，这里如果输入错误，之后就提交不到仓库了，我在这里遇到了这个问题导致后面一直提交不上去，浪费了时间。
+然后终端会让你输入你Github上的repo地址，这里注意不要根据它给的样式输入，找到自己的仓库地址，格式是：```git@github.com:yourusername/yourusername.github.com.git```，这里如果输入错误，之后就提交不到仓库了，我在这里遇到了这个问题导致后面一直提交不上去，浪费了时间。
 
 然后输入
 	
@@ -65,7 +66,8 @@ Octopress + Github Pages 是一个搭建私人博客的比较hack的方式，就
 	
 到了这一步，就可以在浏览器输入```yourusername.github.com```访问你的Github Pages了。
 
-####发布文章
+发布文章
+----
 输入
 
 	rake new_post["title"]
@@ -79,22 +81,27 @@ Octopress + Github Pages 是一个搭建私人博客的比较hack的方式，就
 	rake deploy
 这样就把文章发布到你的私人博客上了，easy!
 
-####那些烦人的404
-###### recognized Liquid tag
+那些烦人的404
+----
+提交代码到Github之后，但是仍不能访问页面，这里以我遇到的问题为例：
 
->The page build failed with the following error:
-The tag `include_array` in `source/index.html` is not a recognized Liquid tag.”
-and i just simply delete the code below and everything works fine in local preview.
+* #### recognized Liquid tag
 
-如果Github给你发邮件报这个问题，那很有可能你把整个source分支都提交到了master引起的错误。
+	>The page build failed with the following error:
+	The tag `include_array` in `source/index.html` is not a recognized Liquid 	tag.”
+	and i just simply delete the code below and everything works fine in local 	preview.
 
-#####submodule
-如果你遇到了关于submodule的错误，比如在安装greyshade主题的时候。那么只要删除这个文件夹就好了
+	如果Github给你发邮件报这个问题，那很有可能你把整个source分支都提交到了master引起的错误。
 
-	git rm --cached .theme/greyshade
+* ####submodule
+	如果你遇到了关于submodule的错误，比如在安装greyshade主题的时候。那么只要删除这个文件夹就好了
+
+		git rm --cached .theme/greyshade
 	
-#####[rejected] master -> master (non-fast-forward)
-当提交到master的时候遇到这个问题，可以查看[stackoverflow上的解决方案](http://stackoverflow.com/questions/17609453/rake-gen-deploy-rejected-in-octopress "Title")
-####小结
+* ####[rejected] master -> master (non-fast-forward)
+	当提交到master的时候遇到这个问题，可以查看[stackoverflow上的解决方案](http://	stackoverflow.com/questions/17609453/rake-gen-deploy-rejected-in-octopress 	"Title")
+	
 
+小结
+----
 花了两天的时间，才把 Github Pages 搭建好了，有意思的是，原来对Ruby跟Git的完全不了解通过这两天的学习，也渐渐有点起色了。特别是对于Git的命令方面掌握了很多。感谢网上很多的Octopress教程，也是他们让我也想把自己搭建的过程分享出来，希望能节省一些人的时间。
