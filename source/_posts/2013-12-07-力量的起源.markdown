@@ -14,9 +14,11 @@ Octopress + Github Pages 是一个搭建私人博客的比较hack的方式，就
 使用RVM（Ruby Version Manager）来负责安装与管理Ruby的环境。在做这一切之前，先安装好Homebrew能解决很多```command not found```的问题
 
 * ####安装Homebrew
-	
-		ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go/install)"
-
+~~~
+ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go/install)"
+~~~
+{:lang="shell"}
+		
 * ####安装RVM
 
 		curl -L https://get.rvm.io | bash -s stable --ruby
