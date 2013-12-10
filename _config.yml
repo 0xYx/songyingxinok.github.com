@@ -38,7 +38,7 @@ kramdown:
   use_coderay: true
   coderay:
     coderay_line_numbers: nil
-    coderay_css: class
+    coderay_css: style
 
 pygments: false # default python pygments have been replaced by pygments.rb
 
@@ -98,7 +98,7 @@ disqus_short_name: johnsong
 disqus_show_comment_count: true
 
 # Google Analytics
-google_analytics_tracking_id:
+google_analytics_tracking_id: UA-46319533-1
 
 # Facebook Like
 facebook_like: false
