@@ -176,10 +176,10 @@ Octopress + Github Pages 是一个搭建私人博客的比较hack的方式，就
   </li>
 </ul>
 
-<p>小结: 在搭建环境的时候，发生了非常多的command not found的问题，直到我安装了homebrew + google所遇到的问题之后，一切迎刃而解了。
-配置Octopress
-—–
-首先在 Github 上创建一个由你自己的用户名组成的repo，如<code>yourusername.github.com</code>，注意这里必须是由你自己的user name 组成。然后第一次提	交会有两个分支，一个是<code>source</code>分支，一个是<code>master</code>分支。<code>source</code>管理博	客的源码，<code>master</code>分支用于管理生成的内容。Octopress的做法似乎是把<code>master</code>分	支对<code>source</code>下的<strong><em>source</em></strong>文件夹做了映射，然后每次都会deploy的时候都会把这个文	件夹提交到<code>master</code>。</p>
+<p>小结: 在搭建环境的时候，发生了非常多的command not found的问题，直到我安装了homebrew + google所遇到的问题之后，一切迎刃而解了。</p>
+
+<h2 id="octopress">配置Octopress</h2>
+<p>首先在 Github 上创建一个由你自己的用户名组成的repo，如<code>yourusername.github.com</code>，注意这里必须是由你自己的user name 组成。然后第一次提	交会有两个分支，一个是<code>source</code>分支，一个是<code>master</code>分支。<code>source</code>管理博	客的源码，<code>master</code>分支用于管理生成的内容。Octopress的做法似乎是把<code>master</code>分	支对<code>source</code>下的<strong><em>source</em></strong>文件夹做了映射，然后每次都会deploy的时候都会把这个文	件夹提交到<code>master</code>。</p>
 
 <p>创建好了repo之后就可以自动生成github的页面，输入：</p>
 
