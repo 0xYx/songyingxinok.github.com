@@ -1,0 +1,17 @@
+---
+layout: post
+title: "about"
+date: 2013-12-30 23:59:25 +0800
+comments: true
+categories: 
+---
+Me
+=======
+
+##[Github](https://github.com/songyingxinok)
+
+##[Stackoverflow](http://stackoverflow.com/users/1564584/johnma)
+
+##[Career 2.0](http://careers.stackoverflow.com/johnsong)
+
+##[Sina Weibo](http://weibo.com/u/2165948414)
