@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://nsguy.com/sitemap.xml 
+Sitemap: http://songyingxinok.github.io/sitemap.xml 
