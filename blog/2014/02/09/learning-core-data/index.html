@@ -5,7 +5,7 @@
 	<script data-cfasync="false" type="text/javascript" src="//use.typekit.net/axj3cfp.js"></script>
 	<script data-cfasync="false" type="text/javascript">try{Typekit.load();}catch(e){}</script>
 	<meta charset="utf-8">
-	<title>学习CoreData并发  | NSGuy</title>
+	<title>CoreData并发处理  | NSGuy</title>
 
 <meta name="author" content="John"> 
 
@@ -93,60 +93,57 @@ $(document).ready(
 </header>
 
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">学习CoreData并发</h2>
+	<h2 class="title">CoreData并发处理</h2>
 	<div class="entry-content"><p>CoreData 怎么处理多线程的问题呢，自从iOS 5.0 以后， 苹果给CoreData 添加了一些新的API，但是由于从前对于UI层面关注比较多，底层的东西关注过少，导致到现在才开始重新看CoreData这块的内容。</p>
 
 <p>iOS 5.0 苹果为CoreData的并发处理添加了两个内容。</p>
 
 <p><strong>首先介绍第一个：</strong></p>
 
-<pre><code> - (id)initWithConcurrencyType:(NSManagedObjectContextConcurrencyType)ct
+<pre><code>- (id)initWithConcurrencyType:(NSManagedObjectContextConcurrencyType)ct
 </code></pre>
 
-<p><code>NSManagedObjectContextConcurrencyType</code> 一共有三种:</p>
+<p>NSManagedObjectContextConcurrencyType 一共有三种:</p>
 
 <ul>
-  <li>NSConfinementConcurrencyType	</li>
+  <li>NSConfinementConcurrencyType</li>
   <li>NSPrivateQueueConcurrencyType</li>
   <li>NSMainQueueConcurrencyType</li>
 </ul>
 
-<p><code>NSConfinementConcurrencyType</code>：每一条线程只能有唯一的一个ManagedObjectContext的模式。与此相对应，苹果的<a href="https://developer.apple.com/library/mac/documentation/cocoa/conceptual/coredata/articles/cdConcurrency.html">官方文档</a>给出了两种解决并发问题的方案：</p>
+<p><code>NSConfinementConcurrencyType</code>：每一条线程只能有唯一的一个ManagedObjectContext的模式。与此相对应，苹果的官方文档给出了两种解决并发问题的方案：</p>
 
 <ol>
   <li>
-    <p>Create a separate managed object context for each thread and share a single persistent store coordinator.
-This is the typically-recommended approach.</p>
+    <p>Create a separate managed object context for each thread and share a single persistent store coordinator. This is the typically-recommended approach.</p>
   </li>
   <li>
-    <p>Create a separate managed object context and persistent store coordinator for each thread.
-This approach provides for greater concurrency at the expense of greater complexity (particularly if you need to communicate changes between different contexts) and increased memory usage.</p>
+    <p>Create a separate managed object context and persistent store coordinator for each thread. This approach provides for greater concurrency at the expense of greater complexity (particularly if you need to communicate changes between different contexts) and increased memory usage.</p>
   </li>
 </ol>
 
-<p><code>NSPrivateQueueConcurrencyType</code> 与 <code>NSMainQueueConcurrencyType</code>:分别对应绑定一个后台线程与主线程。可以使用<code>performBlock:</code>开执行原来需要使用dispatch_async封装的代码.</p>
+<p><code>NSPrivateQueueConcurrencyType</code> 与 <code>NSMainQueueConcurrencyType</code>:分别对应绑定一个后台线程与主线程。可以使用performBlock:开执行原来需要使用dispatch_async封装的代码.</p>
 
-<p><code>NSConfinementConcurrencyType</code>不能执行<code>performBlock:</code>.</p>
+<p><code>NSConfinementConcurrencyType</code>不能执行<code>performBlock</code>:.</p>
 
-<p><strong>第二个内容：</strong>
-<strong>Nested ManagedObjectContext</strong></p>
+<p><strong>第二个内容： Nested ManagedObjectContext</strong></p>
 
-<blockquote>
-  <p>Nested contexts allow you to set up a managed object context so that it accesses data from a parent context instead of from a persistent store. If you request an object from a managed object context that has a parent context, Core Data will first look in the parent. If the parent context has that object in memory, you’ll get a new managed object just like that one. So if there are changes in the parent, you’ll get the changed version of the object. If the object doesn’t exist in that context, it will keep going up through parent contexts until it finally fetches the data from the persistent store. </p>
-</blockquote>
+<pre><code>Nested contexts allow you to set up a managed object context so that it accesses data from a parent context instead of from a persistent store. If you request an object from a managed object context that has a parent context, Core Data will first look in the parent. If the parent context has that object in memory, you’ll get a new managed object just like that one. So if there are changes in the parent, you’ll get the changed version of the object. If the object doesn’t exist in that context, it will keep going up through parent contexts until it finally fetches the data from the persistent store.
+</code></pre>
 
 <p>也就是说，当子Context中做保存操作时，因为子context没有persistentStoreCoordinator ，这个变化会首先推送给他的父context，这个操作将一直传递，直到找到没有父Context的RootContext为止，当rootContext收到这个消息的时候，rootContext自动合并了这次操作，并且做了最终的保存。所以子context查找时，同样也会首先从父context那里查找而不是直接与persistentStoreCoordinator交流。当使用这种结构时，不需要特别去监听NSManagedObjectContextObjectsDidChangeNotification 来合并异步操作到主线程，这也是这种结构的方便之处。</p>
 
-<p>对于这种结构，我找到了来自<strong>Florian Kugler</strong>的几种并发策略:</p>
+<p>对于这种结构，我找到了来自Florian Kugler的几种并发策略:</p>
 
-<h4 id="section">策略一 :</h4>
+<p><strong>策略一 :</strong></p>
 
 <p>同样使用了Nested ManagedObjectContext,但是使用了PrivateQueue作为主Context。对于Worker Context作操作将会经由MainQueue Context 最终由MasterContext合并。这个方案的好处在于Worker Context都是临时工，不需要考虑他们的生命周期。另外的一个好处是，由于他们不能自动获取到来自父亲的更新，所以这个任务可以再未完成之前随时取消。</p>
 
-<p><strong>关于死锁</strong>
-无论何时只要对PersistentStoreCoordinator做写的操作都会造成死锁，但是这个方案的一个好处在于，如果只是做读的操作，是从内存中的，所以不会造成死锁。但是死锁的问题还是要考虑进去的。</p>
+<p><strong>关于死锁</strong></p>
 
-<p><img src="http://static.squarespace.com/static/5159eb3de4b01cd3b022715d/t/517e6219e4b0f470ac92f51a/1367237146374/stack%202.png?format=500w" alt="image 2" /></p>
+<p>无论何时只要对PersistentStoreCoordinator做写的操作都会造成死锁，但是这个方案的一个好处在于，如果只是做读的操作，是从内存中的，所以不会造成死锁。但是死锁的问题还是要考虑进去的。</p>
+
+<p><img src="http://static.squarespace.com/static/5159eb3de4b01cd3b022715d/t/517e6219e4b0f470ac92f51a/1367237146374/stack%202.png?format=500w" alt="策略一" /></p>
 
 <p>示例：</p>
 
@@ -174,24 +171,21 @@ This approach provides for greater concurrency at the expense of greater complex
 }
 </code></pre>
 
-<h4 id="section-1">策略二</h4>
+<p><strong>策略二 :</strong></p>
+
 <p>传统的方式，两个线程都使用同一个持久化存取器，不使用嵌套的结构，而使用<code>NSManagedObjectContextObjectsDidChangeNotification</code>合并来自其他线程的变化。这种方法处理起来要注意几点</p>
 
-<ol>
-  <li>每一条线程都应该是一个独立的<code>ManagedObjectContext</code></li>
-  <li>
-    <p>监听<code>NSManagedObjectContextObjectsDidChangeNotification</code> 时，应该传递context，因为系统也可能会发送通知。</p>
+<p>每一条线程都应该是一个独立的<code>ManagedObjectContext</code>
+监听<code>NSManagedObjectContextObjectsDidChangeNotification</code> 时，应该传递context，因为系统也可能会发送通知。</p>
 
-    <pre><code>  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(managedObjectContextDidChanged:) name:NSManagedObjectContextObjectsDidChangeNotification object:objectContext];
+<pre><code> [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(managedObjectContextDidChanged:) name:NSManagedObjectContextObjectsDidChangeNotification object:objectContext];
 </code></pre>
-  </li>
-</ol>
 
-<p><img src="http://static.squarespace.com/static/5159eb3de4b01cd3b022715d/t/517e6235e4b01510f836b35d/1367237173926/stack%203.png?format=750w" alt="image 3" /></p>
+<p><img src="http://static.squarespace.com/static/5159eb3de4b01cd3b022715d/t/517e6235e4b01510f836b35d/1367237173926/stack%203.png?format=750w" alt="策略二" /></p>
 
-<p>三种策略都可以处理CoreData 并发的问题，有些人比较推崇的是第一个方案，但是同时<strong>Florian Kugler</strong>经过测试发现当读取大量的数据时，策略二花费的总时间与在主线程花费的时间最少。详细原因可以阅读下面的文章。我觉得关于到底采取哪种方案还是通过自己的实践来。</p>
+<p>三种策略都可以处理CoreData 并发的问题，有些人比较推崇的是第一个方案，但是同时Florian Kugler经过测试发现当读取大量的数据时，策略二花费的总时间与在主线程花费的时间最少。详细原因可以阅读下面的文章。我觉得关于到底采取哪种方案还是通过自己的实践来。</p>
 
-<h4 id="section-2">参考</h4>
+<p>参考</p>
 
 <ul>
   <li><a href="http://www.cocoanetics.com/2012/07/multi-context-coredata/">Multi Context CoreData</a></li>
@@ -200,7 +194,6 @@ This approach provides for greater concurrency at the expense of greater complex
   <li><a href="http://wbyoung.tumblr.com/post/27851725562/core-data-growing-pains">Core Data Growing Pain</a></li>
   <li><a href="http://www.cocoanetics.com/2013/02/zarra-on-locking/">CoreData Locking</a></li>
 </ul>
-
 </div>
 
 
@@ -217,12 +210,12 @@ This approach provides for greater concurrency at the expense of greater complex
   
 
 
-<time datetime="2014-02-08T17:53:03+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2014</time></div>
+<time datetime="2014-02-09T13:44:08+08:00" pubdate data-updated="true">Feb 9<span>th</span>, 2014</time></div>
 	
 
 
 	
-		<span class="comments"><a href="/blog/2014/02/08/learnning-coredata-concurrency/#disqus_thread">Comments</a></span>
+		<span class="comments"><a href="/blog/2014/02/09/learning-core-data/#disqus_thread">Comments</a></span>
 	
 </div></article>
 
@@ -267,8 +260,8 @@ Powered by Octopress.
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://nsguy.com/blog/2014/02/08/learnning-coredata-concurrency/';
-        var disqus_url = 'http://nsguy.com/blog/2014/02/08/learnning-coredata-concurrency/';
+        var disqus_identifier = 'http://nsguy.com/blog/2014/02/09/learning-core-data/';
+        var disqus_url = 'http://nsguy.com/blog/2014/02/09/learning-core-data/';
         var disqus_script = 'embed.js';
       
     (function () {
