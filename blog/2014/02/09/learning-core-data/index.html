@@ -128,8 +128,9 @@ $(document).ready(
 
 <p><strong>第二个内容： Nested ManagedObjectContext</strong></p>
 
-<pre><code>Nested contexts allow you to set up a managed object context so that it accesses data from a parent context instead of from a persistent store. If you request an object from a managed object context that has a parent context, Core Data will first look in the parent. If the parent context has that object in memory, you’ll get a new managed object just like that one. So if there are changes in the parent, you’ll get the changed version of the object. If the object doesn’t exist in that context, it will keep going up through parent contexts until it finally fetches the data from the persistent store.
-</code></pre>
+<blockquote>
+  <p>Nested contexts allow you to set up a managed object context so that it 	accesses data from a parent context instead of from a persistent store. If 	you request an object from a managed object context that has a parent 	context, Core Data will first look in the parent. If the parent context has 	that object in memory, you’ll get a new managed object just like that one. 	So if there are changes in the parent, you’ll get the changed version of 	the object. If the object doesn’t exist in that context, it will keep going 	up through parent contexts until it finally fetches the data from the 	persistent store.</p>
+</blockquote>
 
 <p>也就是说，当子Context中做保存操作时，因为子context没有persistentStoreCoordinator ，这个变化会首先推送给他的父context，这个操作将一直传递，直到找到没有父Context的RootContext为止，当rootContext收到这个消息的时候，rootContext自动合并了这次操作，并且做了最终的保存。所以子context查找时，同样也会首先从父context那里查找而不是直接与persistentStoreCoordinator交流。当使用这种结构时，不需要特别去监听NSManagedObjectContextObjectsDidChangeNotification 来合并异步操作到主线程，这也是这种结构的方便之处。</p>
 
