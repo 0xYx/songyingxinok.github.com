@@ -2,38 +2,46 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://nsguy.com/blog/2013/12/07/%E5%8A%9B%E9%87%8F%E7%9A%84%E8%B5%B7%E6%BA%90/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-05-05T23:57:19+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/blog/2014/02/09/learning-core-data/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-05-05T23:57:19+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://nsguy.com/blog/2014/06/03/swift-yu-cocoade-jiao-hu/</loc>
+        <lastmod>2014-06-03T23:58:38+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/about/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-05-05T23:57:19+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/archives/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-06-03T23:58:38+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/blog/archives/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-06-03T23:58:38+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/blog/categories/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-05-05T23:57:19+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/blog/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-06-03T23:58:38+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://nsguy.com/home.html</loc>
+        <lastmod>2014-05-05T23:57:19+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-06-03T23:58:38+08:00</lastmod>
     </url>
     <url>
         <loc>http://nsguy.com/robots.txt</loc>
-        <lastmod>2014-02-14T10:41:05+08:00</lastmod>
+        <lastmod>2014-05-05T23:57:19+08:00</lastmod>
     </url>
 </urlset>

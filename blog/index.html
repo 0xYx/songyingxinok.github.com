@@ -9,7 +9,7 @@
 
 <meta name="author" content="John"> 
 
-<meta name="description" content="CoreData 怎么处理多线程的问题呢，自从iOS 5.0 以后， 苹果给CoreData 添加了一些新的API，但是由于从前对于UI层面关注比较多，底层的东西关注过少，导致到现在才开始重新看CoreData这块的内容。 iOS 5.0 苹果为CoreData的并发处理添加了两个内容。 &hellip;"> <meta name="keywords" content="">
+<meta name="description" content="  Swift 与 Objective-C 之间存在互通性，你可以在同一个文件中访问并使用另一种语言的代码。当你开始在开发app中使用Swift语言的时候，理解如何平衡这种互通性在重新定义，改善，或者是增强代码的时候是非常有益处的。 &hellip;"> <meta name="keywords" content="">
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -93,6 +93,288 @@ $(document).ready(
 </header>
 
 	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h2 class="title">
+		
+		<a href="/blog/2014/06/03/swift-yu-cocoade-jiao-hu/">
+		
+			Swift 与Cocoa的交互</a>
+	</h2>
+	<div class="entry-content">
+		<p>  Swift 与 Objective-C 之间存在互通性，你可以在同一个文件中访问并使用另一种语言的代码。当你开始在开发app中使用Swift语言的时候，理解如何平衡这种互通性在重新定义，改善，或者是增强代码的时候是非常有益处的。</p>
+
+<p>另外一个非常重要的方面是互通性能够使你在写Swift的时候使用Objective-C 的API，在导入Objective-C的框架之后，你可以使用Swift的语法实例化一个类并与之交互。</p>
+
+<h4 id="section">初始化</h4>
+
+<p>  要使用Swift初始化一个Objecive-C的类，只需要使用Swift的语法调用这个类的其中一个构造函数。当一个Objective-C的init方法过渡到Swift时，它不需要本地的Swift初始化语句。init这个前缀是一个关键字，它能决定一个方法是否为初始化方法。例如一个初始化方法以”initWith”开头，”With”将会被切掉，含有”init”或者”initWith”的每一个selector将会变成小写的，其后的每一个selector依次变成参数名，并在圆括号内调用。</p>
+
+<p>例如，当使用Objective-C时你会这样做：</p>
+
+<pre><code>UITableView *myTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+</code></pre>
+
+<p>而使用Swift时：</p>
+
+<pre><code>let myTableView: UITableView = UITableView(frame: CGRectZero, style: .Grouped)
+</code></pre>
+
+<p>你不再需要调用alloc，Swift能替你实现。注意当使用Swift风格的初始化函数的时候，”init”并没有出现。</p>
+
+<p>你可以在初始化时显式的声明对象的类型，也可以省略它，Swift能够正确判断对象的类型。</p>
+
+<pre><code>let myTextField = UITextField(frame: CGRect(0.0, 0.0, 200.0, 40.0))
+</code></pre>
+
+<p>  上述的UITableView与UITextField与你在Objective-C时的功能完全一致，你可以用一样的方式使用他们，包括访问属性或者调用各自的类中的方法。</p>
+
+<p>  为了连贯与统一，Objective-C中的工厂方法也在Swift中映射为简单方便的初始化方法，这种映射能够让他们使用同样简单，清晰的初始化方法，例如，在Objective-C中你可能这样调用一个类方法：</p>
+
+<pre><code>UIColor *color = [UIColor colorWithRed:0.5 green:0.0 blue:0.5 alpha:1.0];
+</code></pre>
+
+<p>在Swift中，你可以这样做：</p>
+
+<pre><code>let color = UIColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)
+</code></pre>
+
+<h4 id="section-1">访问属性</h4>
+
+<p>两种语言都使用点操作符来访问与设置属性</p>
+
+<pre><code>myTextField.textColor = UIColor.darkGrayColor()
+myTextField.text = "Hello world"
+if myTextField.editing {
+	myTextField.editing = false
+}
+</code></pre>
+
+<p>  当访问或设置属性之时，直接使用属性名称，不需要增加圆括号。你发现darkGrayColor后面跟了一对圆括号，这是因为darkGrayColor是UIColor的类方法，而不是一个属性。</p>
+
+<p>  在Objective-C时代，一个有返回值的无参方法可以被作为一个隐式的访问函数，并且可以与访问器使用同样的方法调用。但在Swift中不再能够这样做了，在Swift时代，只有使用@property关键字声明的属性才会被作为属性引入。</p>
+
+<h4 id="section-2">方法</h4>
+
+<p>  当在Swift调用Objective-C方法时，使用点操作符。</p>
+
+<p>  Objective-C中的方法转换到Swift时，Objective-C的选择器的第一部分将会成为方法名并出现在圆括号的前面，而第一个参数将直接在括号中出现，并且没有名字，而剩下的参数名与参数则一一对应的填入圆括号中。</p>
+
+<p>例如在调用Objective-C方法时：</p>
+
+<pre><code>[myTableView insertSubview:mySubview atIndex:2];
+</code></pre>
+
+<p>而在Swift中</p>
+
+<pre><code>myTableView.insertSubview(mySubview, atIndex: 2)
+</code></pre>
+
+<p>如果你调用一个无参函数，你仍需要在名称后面加上一对圆括号</p>
+
+<pre><code>myTableView.layoutIfNeeded()
+</code></pre>
+
+<h4 id="id-">id 兼容性</h4>
+
+<p>  Swift包含一个叫做 AnyObject 的协议类型，可以表示所有的对象。就好像Objective-C中的id.AnyObject 协议可以让你写出类型安全的代码的同时维持无类型对象的通用性。因为AnyObject协议保证了这种安全，Swift将id对象导入为AnyObject.</p>
+
+<p>  例如，与id一样，你可以为AnyObject类型的对象分配任何其他类型的对象，你也同样可以为它重新分配其他类型的对象。</p>
+
+<pre><code>var myObject: AnyObject = UITableViewCell()
+myObject = NSDate()
+</code></pre>
+
+<p>  你也可以同样在调用Objective-C方法或者访问属性时不将它转换为具体类的类型。包括Objcive-C中标记为@objc的方法。</p>
+
+<pre><code>let futureDate = myObject.dateByAddingTimeInterval(10)
+let timeSinceNow = myObject.timeIntervalSinceNow
+</code></pre>
+
+<p>  然而，因为AnyObject对象的类型只有在运行时才能知道，所以我们不经意间，就写出了不安全的代码。另外，与Objective-C不一样的是，如果你调用方法或者访问的属性AnyObject 对象没有声明，将会报运行时错误。例如，下面的代码将会在运行时抛出unrecognized selector error 。</p>
+
+<pre><code>myObject.characterAtIndex(5)
+// crash, myObject does't respond to that method
+</code></pre>
+
+<p>  尽管如此，你也可以借助Swift的optionals特性来排除这个Objective-C中常见的错误，当你用AnyObject对象调用一个Objective-C的方法，这次调用将会变成一次隐式展开optional（implicitly unwrapped optional）的行为。你可以通过optional特性来决定AnyObject类型的对象是否调用该方法，同样的，你可以把这种特性应用在属性上。</p>
+
+<p>  例如，在下面的代码中，第一行与第二行并不会执行，因为NSDate 对象并没有声明<code>length</code>属性<code>与characterAtIndex:</code> 方法。myLength将被推测为一个可选的Int类型，并且被设置成为nil。你可以使用<code>if-let</code>声明来有条件的展开这个方法的返回值，从而判断对象是否能执行这个方法。就像第三行做的一样。</p>
+
+<pre><code>let myLength = myObject.length?
+let myChar = myObject.characterAtIndex?(5)
+if let fifthCharacter = myObject.characterAtIndex(5) {
+    println("Found \(fifthCharacter) at index 5")
+}
+</code></pre>
+
+<p>而对于Swift中的强制类型转换，从AnyObject类型的对象转换成更明确的类型并不会保证完全成功，所以它会返回一个可选的值。而你需通过检查该值的类型来确认转换是否成功。</p>
+
+<pre><code>let userDefaults = NSUserDefaults.standardUserDefaults()
+let lastRefreshDate: AnyObject? = userDefaults.objectForKey("LastRefreshDate")
+if let date = lastRefreshDate as? NSDate {
+	println("\(date.timeIntervalSinceReferenceDate)")
+}
+</code></pre>
+
+<p>当然，如果你能够确定这个对象的类型(并且它不是nil)，你可以加上一个as操作符强制调用。</p>
+
+<pre><code>let myDate = lastRefreshDate as NSDate
+let timeInterval = myDate.timeIntervalSinceReferenceDate
+</code></pre>
+
+<h4 id="nil">使用nil</h4>
+
+<p>  在Objective-C时代，对象的引用可以使值为NULL的原始指针（同样也是Objective-C中的nil）。而在Swift中，所有的值–包括结构体与对象的引用–都被保证为非空。作为替代，你将这个可以为空的值包装为optional type。当你需要指示该值为空，你需要使用nil,你可以阅读更多<a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/TheBasics.html#//apple_ref/doc/uid/TP40014097-CH5">关于Optionals</a>的内容</p>
+
+<p>  因为Objective-C不会保证一个对象的值是否非空，Swift在引入Objective-C的API的时候，确保了所有函数的返回类型与参数类型都是optional，在使用Objective-C API之前，你应该检查并保证该值非空。</p>
+
+<p>  在某些情况下，你可能绝对确认某些Objective-C方法或者属性永远不应该返回一个nil的对象引用。为了让对象在这种情况下更加易用，Swift使用 implicitly unwrapped optionals 方法引入对象， implicitly unwrapped optionals 包含optional 类型的所有安全特性。此外，你可以直接访问对象的值而无需检查nil。当你访问这种类型的变量时， implicitly unwrapped optional 首先检查这个对象的值是否不存在，如果不存在，将会抛出运行时错误。</p>
+
+<h4 id="extensions">扩展 Extensions</h4>
+
+<p>  一个Swift的扩展与Objective-C的类别很相似，扩展可以为原来的类增加方法，结构体，枚举，包括在Objective-C中定义过的。你可以为系统的框架或者你自己的类型增加扩展，只需要简单的引入合适的组件。</p>
+
+<p>  比如，你可以通过扩展UIBezierPath类来为它增加一个等边三角形，这个方法只需提供三角形的边长与起点。</p>
+
+<pre><code>extension UIBezierPath {
+	convenience init(triangleSideLength: Float, origin: CGPoint) {
+  	  	self.init()
+    	let squareRoot = Float(sqrt(3))
+        let altitude = (squareRoot * triangleSideLength) / 2
+	    moveToPoint(origin)
+    	addLineToPoint(CGPoint(triangleSideLength, origin.x))
+        addLineToPoint(CGPoint(triangleSideLength / 2, altitude))
+	    closePath()
+   		}
+}
+</code></pre>
+
+<p>  你也可以使用扩展来增加属性（包括类的属性与静态属性）。然而，这些属性必须是通过计算才能获取的，扩展不会为类，结构体，枚举存储属性。下面这个例子为CGRect类增加了一个叫area的属性</p>
+
+<pre><code>extension CGRect {
+	var area: CGFloat {
+		return width * height
+	}
+}
+	let rect = CGRect(x: 0.0, y: 0.0, width: 10.0, height: 50.0)
+	let area = rect.area
+	// area: CGFloat = 500.0
+</code></pre>
+
+<p>你可以使用扩展来为类添加协议而无需增加它的子类。你不能使用扩展来覆盖Objective-C类型中存在的方法与属性。</p>
+
+<h4 id="closures">闭包Closures</h4>
+
+<p>  Objective-C 中的blocks会被自动引入为Swift 中的闭包。例如，下面是一个Objective-C 中的block 变量</p>
+
+<pre><code>void (^completionBlock)(NSData *, NSError *) = ^(NSData *data, NSError *error) {/* ... */}
+</code></pre>
+
+<p>而它在Swift中的形式为</p>
+
+<pre><code>let completionBlock: (NSData, NSError) -&gt; Void = {data, error in /* ... */}
+</code></pre>
+
+<p>  Swift的闭包与Objective-C中的blocks能够和睦相处，所以你可以把一个Swift闭包传递给一个把block作为参数的Objective-C函数。Swift闭包与函数具有互通的类型，所以你甚至可以传递Swift函数的名字。</p>
+
+<p>  闭包与blocks语义上想通但是在一个地方不同：变量是可以直接改变的，而不是像block那样会拷贝变量。换句话说，Swift中变量的默认行为与Objective-C中__block变量一致。</p>
+
+<h4 id="object-comparison">比较对象Object Comparison</h4>
+
+<p>  当比较两个Swift中的对象时，可以使用两种方式。第一种，使用（==），判断两个对象内容是否相同。第二种，使用(===),判断常量或者变量是否为同一个对象的实例。</p>
+
+<p>  Swift与Objective-C一般使用 == 与 === 操作符来做比较。Swift的==操作符为源自NSObject的对象提供了默认的实现。在实现 == 操作符时，Swift调用 NSObject定义的 isEqual: 方法。NSObject类仅仅做了身份的比较，所以你需要在你自己的类中重新实现isEqual:方法。因为你可以直接传递Swift对象给Objective-C的API,你也应该为这些对象实现自定义的isEqual:方法，如果你希望比较两个对象的内容是否相同而不是仅仅比较他们是不是由相同的对象派生。</p>
+
+<p>  作为实现比较函数的一部分，确保根据<a href="https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/DevPedia-CocoaCore/ObjectComparison.html#//apple_ref/doc/uid/TP40008195-CH37">Object comparison</a>实现对象的hash属性。更进一步的说，如果你希望你的类能够作为字典中的键，也需要遵从Hashable协议以及实现hashValues属性。</p>
+
+<h4 id="swift-type-compatibility">Swift Type Compatibility</h4>
+
+<p>  当你定义了一个继承自NSObject 或者其他Objective-C 类的Swift类，这些类都能与Objective-C无缝连接。所有的步骤都有Swift编译器自动完成，如果你从未在Objective-C代码中导入Swift 类，你也不需要担心类型适配问题。另外一种情况，如果你的Swift类并不来源自Objectve-C类而且你希望能在Objecive-C的代码中使用它，你可以使用下面描述的@objc属性。</p>
+
+<p>  @objc 可以让你的Swift API在Objective-C 与 runtime 中使用。换句话说，你可以通过在任何Swift方法、类、属性前添加@objc，来使得他们可以在Objective-C 代码中使用。如果你的类继承自Objective-C,编译器会自动帮助你完成这一步。编译器还会在所有的变量、方法、属性前加@objc，如果这个类自己前面加上了@objc关键字。当你使用@IBOutlet,@IBAction,或者是@NSManaged ，@objc也会自动加在前面。这个关键字也可以用在Objetive-C中的 target-action 设计模式中，例如，NSTimer或者UIButton。</p>
+
+<p>  当你在Objective-C中使用Swift API，编译器基本对语句做直接的翻译。例如，<code>Swift API func playSong(name: String)</code> 会被解释为 <code>- (void)playSong:(NSString *)name</code> 。然而，有一个例外：当在Objective-C中使用Swift的初始化函数，编译器会在方法前添加”initWith”并且将原初始化函数的第一个参数首字母大写。例如，这个Swift初始化函数</p>
+
+<pre><code>init (songName: String, artist: String 
+</code></pre>
+
+<p>将被翻译为</p>
+
+<pre><code> - (instancetype)initWithSongName:(NSString *)songName artist:(NSString *)artist
+</code></pre>
+
+<p>  Swift 同时也提供了一个@objc关键字的变体，通过它你可以自定义在Objectiv-C中转换的函数名。例如，如果你的Swift 类的名字包含Objecytive-C中不支持的字符，你就可以为Objective-C提供一个可供替代的名字。如果你给Swift函数提供一个Objcetiv-C 名字，要记得为带参数的函数添加（:）</p>
+
+<pre><code>@objc(Squirrel)
+class Белка {
+	@objc(initWithName:)
+	init (имя: String) { /*...*/ }
+	@objc(hideNuts:inTree:)
+   		func прячьОрехи(Int, вДереве: Дерево) { /*...*/ }
+}
+</code></pre>
+
+<p>  当你在Swift类中使用@objc(&lt;#name#&gt;)关键字，这个类可以不需要命名空间即可在Objective-C中使用。这个关键字在你迁徙Objecive-C代码到Swift时同样也非常有用。由于归档过的对象存贮了类的名字，你应该使用 @objc(&lt;#name#&gt;) 来声明与旧的归档过的类相同的名字，这样旧的类才能被新的Swift类解档。</p>
+
+<h4 id="objective-c-selectors">Objective-C Selectors</h4>
+
+<p>  一个Objective-C 选择器类型指向一个Objective-C的方法名。在Swift时代， Objective-C 的选择器被Selector结构体替代。你可以通过字符串创建一个选择器，比如 </p>
+
+<pre><code>let mySelector: Selector = "tappedButton:"
+</code></pre>
+
+<p>由于字符串能够自动转换为选择器，所以你可以把字符串直接传递给接受选择器的方法。</p>
+
+<pre><code>import UIKit
+class MyViewController: UIViewController {
+	let myButton = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 50))
+
+	init(nibName nibNameOrNil: String!, bundle nibBundleOrNil: NSBundle!) {
+    	super.init(nibName: nibName, bundle: nibBundle)
+    	myButton.targetForAction("tappedButton:", withSender: self)
+	}
+
+	func tappedButton(sender: UIButton!) {
+    	println("tapped button")
+	}
+}
+</code></pre>
+
+<p>如果你的Swift类继承自Objective-C,你的所有方法都可以用作Objective-C的选择器。另外，如果你的Swift类并未继承自Objective-C,你需要在方法前面加上@objc 关键字。<a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/BuildingCocoaApps/InteractingWithObjective-CAPIs.html#//apple_ref/doc/uid/TP40014216-CH4-XID_36">更多参考</a></p>
+
+<hr />
+<p>从上面看出在项目中使用Swift是不难的，苹果已经为开发者做好了准备，而且对于熟悉Cocoa框架的人也是非常容易上手。所以我认为自己应该积极接受这个变化，并且视为一种机遇。</p>
+
+<p><a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/BuildingCocoaApps/InteractingWithObjective-CAPIs.html#//apple_ref/doc/uid/TP40014216-CH4-XID_26">原文链接</a></p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-03T23:34:44+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time></div>
+	
+
+
+	
+		<span class="comments"><a href="/blog/2014/06/03/swift-yu-cocoade-jiao-hu//blog/index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
 
 
     <article class="post">
